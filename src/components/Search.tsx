@@ -4,7 +4,19 @@ interface SearchProps {
 }
 
 const Search = ({ searchTerm, setSearchTerm }: SearchProps) => {
-  return <div className="text-white text-3xl">{searchTerm}</div>;
+  return (
+    <div className="search">
+      <div>
+        <img src="search.svg" alt="search" />
+        <input
+          type="text"
+          placeholder="Search through thousands of movies"
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
+      </div>
+    </div>
+  );
 };
 
 export default Search;
