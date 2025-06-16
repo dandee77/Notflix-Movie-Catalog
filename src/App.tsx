@@ -1,4 +1,5 @@
 import Search from "./components/Search";
+import Skeleton from "./components/Skeleton";
 import { useState, useEffect } from "react";
 
 const API_BASE_URL = "https://api.themoviedb.org/3";
@@ -11,24 +12,40 @@ const API_OPTIONS = {
   },
 };
 
+interface Movie {
+  id: number;
+  title: string;
+  poster_path?: string;
+}
+
+interface MovieResponse {
+  results: Movie[];
+}
+
 const App = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [movieList, setMovieList] = useState<Movie[]>([]);
+  const [isloading, setIsLoading] = useState(false);
 
   const fetchMovies = async () => {
+    setIsLoading(true);
+    setErrorMessage("");
+
     try {
       const endpoint = `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
       const response = await fetch(endpoint, API_OPTIONS);
 
-      if (!response.ok) {
-        throw new Error("Failed to fetch movies");
-      }
+      // Check if the response is ok (status in the range 200-299)
+      if (!response.ok) throw new Error("Failed to fetch movies");
 
-      const data = await response.json();
-      console.log(data);
+      const data: MovieResponse = await response.json();
+      setMovieList(data.results);
     } catch (error) {
       console.error("Error fetching movies:", error);
       setErrorMessage("Failed to fetch movies. Please try again later.");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -49,8 +66,21 @@ const App = () => {
           <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         </header>
         <section className="all-movies">
-          <h2>All Movies</h2>
-          {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+          <h2 className="mt-[40px]">All Movies</h2>
+
+          {isloading ? (
+            <Skeleton />
+          ) : errorMessage ? (
+            <p className="text-red-500">{errorMessage}</p>
+          ) : (
+            <ul>
+              {movieList.map((movie: Movie) => (
+                <p key={movie.id} className="text-white">
+                  {movie.title}
+                </p>
+              ))}
+            </ul>
+          )}
         </section>
       </div>
     </main>
