@@ -1,3 +1,4 @@
+import MovieCard from "./components/MovieCard";
 import Search from "./components/Search";
 import Skeleton from "./components/Skeleton";
 import { useState, useEffect } from "react";
@@ -14,8 +15,6 @@ const API_OPTIONS = {
 
 interface Movie {
   id: number;
-  title: string;
-  poster_path?: string;
 }
 
 interface MovieResponse {
@@ -75,9 +74,7 @@ const App = () => {
           ) : (
             <ul>
               {movieList.map((movie: Movie) => (
-                <p key={movie.id} className="text-white">
-                  {movie.title}
-                </p>
+                <MovieCard key={movie.id} {...movie} />
               ))}
             </ul>
           )}
