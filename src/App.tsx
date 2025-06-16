@@ -17,13 +17,24 @@ const App = () => {
 
   const fetchMovies = async () => {
     try {
+      const endpoint = `${API_BASE_URL}/discover/movie?sort_by=popularity.desc`;
+      const response = await fetch(endpoint, API_OPTIONS);
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch movies");
+      }
+
+      const data = await response.json();
+      console.log(data);
     } catch (error) {
       console.error("Error fetching movies:", error);
       setErrorMessage("Failed to fetch movies. Please try again later.");
     }
   };
 
-  useEffect(() => {}, []);
+  useEffect(() => {
+    fetchMovies();
+  }, []);
 
   return (
     <main>
@@ -35,9 +46,12 @@ const App = () => {
             Find <span className="text-gradient">Movies</span> You'll Enjoy
             Without the Hassle
           </h1>
+          <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
         </header>
-
-        <Search searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+        <section className="all-movies">
+          <h2>All Movies</h2>
+          {errorMessage && <p className="text-red-500">{errorMessage}</p>}
+        </section>
       </div>
     </main>
   );
