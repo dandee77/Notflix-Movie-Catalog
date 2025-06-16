@@ -12,6 +12,19 @@ interface Movie {
   poster_path: string;
 }
 
+interface TrendingRow {
+  $id: string;
+  $collectionId: string;
+  $databaseId: string;
+  $createdAt: string;
+  $updatedAt: string;
+  $permissions: string[];
+  movie_id: number;
+  poster_url: string;
+  count: number;
+  searchTerm: string;
+}
+
 export const updateSearchCount = async (searchTerm: string, movie: Movie) => {
   try {
     const result = await database.listDocuments(DATABASE_ID, COLLECTION_ID, [
@@ -34,4 +47,13 @@ export const updateSearchCount = async (searchTerm: string, movie: Movie) => {
   } catch (error) {
     console.error("Error updating search count:", error);
   }
+};
+
+export const getTrendingMovies = async (): Promise<TrendingRow[]> => {
+  const result = await database.listDocuments<TrendingRow>(
+    DATABASE_ID,
+    COLLECTION_ID,
+    [Query.orderDesc("count"), Query.limit(5)]
+  );
+  return result.documents;
 };
